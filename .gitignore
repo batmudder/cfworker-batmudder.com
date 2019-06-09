@@ -8,3 +8,5 @@
 # Project Specific #
 ####################
 wrangler.toml
+node_modules/
+worker/
