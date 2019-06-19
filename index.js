@@ -8,6 +8,7 @@ const REDIRECT_HASHTABLE = {
   batshoppe: { url: "batshoppe.dy.fi/index.php", protocol: "http:" },
   eq: { url: "batshoppe.dy.fi/index.php", protocol: "http:" },
   jeskko: { url: "jeskko.pupunen.net/map", protocol: "http:" },
+  gmap: { url: "jeskko.pupunen.net/map", protocol: "http:" },
   milk: { url: "taikajuoma.ovh/bat/", protocol: "https:" },
   wiki: { url: "taikajuoma.ovh/wiki/Main_Page", protocol: "https:" },
   dest: { url: "taikajuoma.ovh/wiki/Desters", protocol: "https:" },
