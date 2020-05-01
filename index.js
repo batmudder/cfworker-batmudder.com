@@ -5,8 +5,8 @@ const REDIRECT_HASHTABLE = {
     url: "www.anvianet.fi/moonlord/batmud/barbarian.html",
     protocol: "http:"
   },
-  batshoppe: { url: "batshoppe.dy.fi/index.php", protocol: "http:" },
-  eq: { url: "batshoppe.dy.fi/index.php", protocol: "http:" },
+  batshoppe: { url: "batshoppe.dy.fi/index.php", protocol: "https:" },
+  eq: { url: "batshoppe.dy.fi/index.php", protocol: "https:" },
   jeskko: { url: "jeskko.pupunen.net/map", protocol: "http:" },
   gmap: { url: "jeskko.pupunen.net/map", protocol: "http:" },
   milk: { url: "taikajuoma.ovh/bat/", protocol: "https:" },
