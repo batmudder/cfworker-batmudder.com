@@ -1,13 +1,19 @@
 const hostname = "batmudder.com";
 const REDIRECT_MAP = new Map([
-  ["moonlord", "www.anvianet.fi/moonlord/batmud/barbarian.html"],
-  ["milk", "taikajuoma.ovh/bat/"],
-  ["batshoppe", "batshoppe.dy.fi/index.php"],
-  ["eq", "batshoppe.dy.fi/index.php"],
-  ["wiki", "taikajuoma.ovh/wiki/Main_Page"],
-  ["jeskko", "jeskko.pupunen.net/map"],
-  ["dest.batmudder.com", "taikajuoma.ovh/wiki/Desters"],
-  ["marvin.batmudder.com", "batmarvin.000webhostapp.com"]
+  //http only sites (includes sites with HTTPS warnings)
+  ["moonlord", "http://www.anvianet.fi/moonlord/batmud/barbarian.html"],
+  ["batshoppe", "http://batshoppe.dy.fi/index.php"],
+  ["eq", "http://batshoppe.dy.fi/index.php"],
+  ["jeskko", "http://jeskko.pupunen.net/map"],
+  //https only sites
+  ["milk", "https://taikajuoma.ovh/bat/"],
+  ["wiki", "https://taikajuoma.ovh/wiki/Main_Page"],
+  ["dest", "https://taikajuoma.ovh/wiki/Desters"],
+  ["ggrmaps", "https://tnsp.org/maps/"],
+  ["ggrtf", "https://tnsp.org/~ccr/ggrtf/"],
+  ["ggrbat", "https://tnsp.org/~ccr/bat/"],
+  //http or https sites
+  ["marvin", "http://batmarvin.000webhostapp.com"],
 ]);
 const someURLToRedirectTo = "https://" + hostname;
 
@@ -28,17 +34,24 @@ async function redirectResponse(url, type = 301) {
 async function bulkRedirects(request, redirectMap) {
   let requestURL = new URL(request.url);
   // https://nodejs.org/api/url.html#url_url_hostname
-  let protocol = requestURL.protocol;
   let subdomain = requestURL.hostname.split(".")[0];
-  let location = redirectMap.get(subdomain);
-  console.log("\nlocation:" + location);
+  let redirect = redirectMap.get(subdomain);
+  if (redirect){
+    let redirectURL = new URL(redirect);
+    console.log("\nredirectURL:" + redirectURL);
 
-  if (location) {
-    let full_location = protocol + "//" + location;
-    return Response.redirect(full_location, 302);
+    if (requestURL.protocol == redirectURL.protocol) {
+      console.log("\nprotocol match redirect!");
+      console.log("\nredirectURL string" + redirectURL.toString());
+      return Response.redirect(redirectURL.toString(), 302);
+    } else {
+      console.log("\nprotocol upgrade redirect!");
+      redirectURL.protocol = "https:"
+      return Response.redirect(redirectURL.toString(), 302);
+    }
+  } else {
+    return fetch(request);
   }
-  // If not in map, return the original request
-  return fetch(request);
 }
 
 /**
