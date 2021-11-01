@@ -13,10 +13,9 @@ const REDIRECT_HASHTABLE = {
   dest: { url: "taikajuoma.ovh/wiki/Desters", protocol: "https:" },
   ggrmaps: { url: "tnsp.org/maps/", protocol: "https:" },
   ggrtf: { url: "tnsp.org/~ccr/ggrtf/", protocol: "https:" },
-  ggrbat: { url: "tnsp.org/~ccr/bat/", protocol: "https:" },
+  tazliel: { url: "sites.google.com/site/battazliel/", protocol: "https:" },
   marvin: { url: "batmarvin.000webhostapp.com", protocol: "either" }
 };
-const someURLToRedirectTo = "https://" + hostname;
 
 /**
  * redirectResponse returns a redirect Response
