@@ -1,20 +1,21 @@
 const hostname = "batmudder.com";
-const REDIRECT_MAP = new Map([
-  //http only sites (includes sites with HTTPS warnings)
-  ["moonlord", "http://www.anvianet.fi/moonlord/batmud/barbarian.html"],
-  ["batshoppe", "http://batshoppe.dy.fi/index.php"],
-  ["eq", "http://batshoppe.dy.fi/index.php"],
-  ["jeskko", "http://jeskko.pupunen.net/map"],
-  //https only sites
-  ["milk", "https://taikajuoma.ovh/bat/"],
-  ["wiki", "https://taikajuoma.ovh/wiki/Main_Page"],
-  ["dest", "https://taikajuoma.ovh/wiki/Desters"],
-  ["ggrmaps", "https://tnsp.org/maps/"],
-  ["ggrtf", "https://tnsp.org/~ccr/ggrtf/"],
-  ["ggrbat", "https://tnsp.org/~ccr/bat/"],
-  //http or https sites
-  ["marvin", "http://batmarvin.000webhostapp.com"],
-]);
+// Organize sites by http only, https only or either protocol
+const REDIRECT_HASHTABLE = {
+  moonlord: {
+    url: "www.anvianet.fi/moonlord/batmud/barbarian.html",
+    protocol: "http:"
+  },
+  batshoppe: { url: "batshoppe.dy.fi/index.php", protocol: "http:" },
+  eq: { url: "batshoppe.dy.fi/index.php", protocol: "http:" },
+  jeskko: { url: "jeskko.pupunen.net/map", protocol: "http:" },
+  milk: { url: "taikajuoma.ovh/bat/", protocol: "https:" },
+  wiki: { url: "taikajuoma.ovh/wiki/Main_Page", protocol: "https:" },
+  dest: { url: "taikajuoma.ovh/wiki/Desters", protocol: "https:" },
+  ggrmaps: { url: "tnsp.org/maps/", protocol: "https:" },
+  ggrtf: { url: "tnsp.org/~ccr/ggrtf/", protocol: "https:" },
+  ggrbat: { url: "tnsp.org/~ccr/bat/", protocol: "https:" },
+  marvin: { url: "batmarvin.000webhostapp.com", protocol: "either" }
+};
 const someURLToRedirectTo = "https://" + hostname;
 
 /**
@@ -22,7 +23,7 @@ const someURLToRedirectTo = "https://" + hostname;
  * @param {Request} url where to redirect the response
  * @param {number?=301|302} type permanent or temporary redirect
  */
-async function redirectResponse(url, type = 301) {
+async function redirectResponse(url, type = 302) {
   return Response.redirect(url, type); //await fetch(request)
 }
 
@@ -33,76 +34,27 @@ async function redirectResponse(url, type = 301) {
  */
 async function bulkRedirects(request, redirectMap) {
   let requestURL = new URL(request.url);
-  // https://nodejs.org/api/url.html#url_url_hostname
   let subdomain = requestURL.hostname.split(".")[0];
-  let redirect = redirectMap.get(subdomain);
-  if (redirect){
-    let redirectURL = new URL(redirect);
-    console.log("\nredirectURL:" + redirectURL);
-
-    if (requestURL.protocol == redirectURL.protocol) {
-      console.log("\nprotocol match redirect!");
-      console.log("\nredirectURL string" + redirectURL.toString());
-      return Response.redirect(redirectURL.toString(), 302);
-    } else {
-      console.log("\nprotocol upgrade redirect!");
-      redirectURL.protocol = "https:"
-      return Response.redirect(redirectURL.toString(), 302);
+  if (subdomain in redirectMap) {
+    let subUrl = redirectMap[subdomain]["url"];
+    let subProtocol = redirectMap[subdomain]["protocol"];
+    if (subProtocol != "either") {
+      let redirectURL = subProtocol + "//" + subUrl;
+      return Response.redirect(redirectURL, 302);
+    } else if (subProtocol == "either") {
+      // If site supports either, use the requested protocol
+      let redirectURL = requestURL.protocol + "//" + subUrl;
+      return Response.redirect(redirectURL, 302);
     }
-  } else {
-    return fetch(request);
   }
+  return fetch(request);
 }
 
 /**
- * Example of how redirect methods above can be used in an application
+ * Redirect based on information in the hashtable
  *  */
 addEventListener("fetch", async event => {
   const { request } = event;
   const { url, method } = request;
-  const protocol = new URL(url).protocol;
-  console.log("\nprotocol:" + protocol);
-  const subdomain = new URL(url).hostname.split(".")[0];
-  console.log("\nsubdomain:" + subdomain);
-
-  event.respondWith(bulkRedirects(request, REDIRECT_MAP));
-
-  // if (subdomain.includes('workertest*'))
-  //     console.log('match!')
-  //     event.respondWith(bulkRedirects(request, REDIRECT_MAP))
-  // // if (subdomain.includes('workertest2'))
-  // //     event.respondWith(redirectResponse(someURLToRedirectTo))
-
-  // // if doesn't match above return a dummy response for demonstration purposes
-  // event.respondWith(new Response('some random response for ' + url))
+  event.respondWith(bulkRedirects(request, REDIRECT_HASHTABLE));
 });
-
-// server_name www.batmudder.com;
-// return 302 $scheme://batmudder.com$request_uri;
-
-// server_name  moonlord.batmudder.com;
-// return 302 $scheme://www.anvianet.fi/moonlord/batmud/barbarian.html;
-// # http://www.anvianet.fi/moonlord/batmud/compare.htm
-
-// server_name  milk.batmudder.com;
-// return 302 $scheme://taikajuoma.ovh/bat/;
-
-// server_name  batshoppe.batmudder.com eq.batmudder.com;
-// return 302 $scheme://batshoppe.dy.fi/index.php;
-
-// server_name  wiki.batmudder.com;
-// return 302 $scheme://taikajuoma.ovh/wiki/Main_Page;
-
-// server_name  jeskko.batmudder.com;
-// return 302 $scheme://jeskko.pupunen.net/map;
-
-// ### NO LONGER NEEDED - DIRECT DNS LINK
-// server_name  nepos.batmudder.com;
-// return 302 $scheme://nepos.dtdns.net;
-// ####
-
-// server_name  dest.batmudder.com;
-// return 302 $scheme://taikajuoma.ovh/wiki/Desters;
-
-// server_name  marvin.batmudder.com;
-// return 302 $scheme://batmarvin.000webhostapp.com;
