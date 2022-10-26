@@ -2,8 +2,8 @@ const hostname = "batmudder.com";
 // Organize sites by http only, https only or either protocol
 const REDIRECT_HASHTABLE = {
   moonlord: {
-    url: "https://web.archive.org/web/20180826203131/http://www.anvianet.fi/moonlord/batmud/barbarian.html",
-    protocol: "https:"
+    url: "www.anvianet.fi/moonlord/batmud/barbarian.html",
+    protocol: "http:"
   },
   batshoppe: { url: "batshoppe.dy.fi/index.php", protocol: "https:" },
   eq: { url: "batshoppe.dy.fi/index.php", protocol: "https:" },
