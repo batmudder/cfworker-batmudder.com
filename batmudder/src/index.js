@@ -14,7 +14,8 @@ const REDIRECT_HASHTABLE = {
   dest: { url: "taikajuoma.ovh/wiki/Desters", protocol: "https:" },
   ggrmaps: { url: "tnsp.org/maps/", protocol: "https:" },
   ggrtf: { url: "tnsp.org/~ccr/ggrtf/", protocol: "https:" },
-  tazliel: { url: "sites.google.com/site/battazliel/", protocol: "https:" }
+  tazliel: { url: "sites.google.com/site/battazliel/", protocol: "https:" },
+  hair: { url: "flaprider.dyndns.org/~hair/batmud/", protocol: "http:" }
 };
 
 /**
